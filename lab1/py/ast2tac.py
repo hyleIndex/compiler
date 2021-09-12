@@ -8,9 +8,9 @@ tac_json = [ {"proc" : "@main", "body" : []} ]
 op_name = {"PLUS" : "add", "MINUS" : "sub", "TIMES" : "mul", "DIV" : "div", "MODULUS" : "mod", "BITAND" : "and",
  "BITOR" : "or", "BITXOR" : "xor", "BITSHL" : "shl", "BITSHR" : "shr", "UMINUS" : "neg", "BITCOMPL" : "not"}
 
-ast_list = []
+ast_list = [] # list all the iterations
 
-variable_fresh = {}
+variable_fresh = {} # maps variable to its fresh
 
 class Expr: pass
 
