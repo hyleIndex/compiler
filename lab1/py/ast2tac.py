@@ -28,14 +28,18 @@ class Variable(Expr):
             variable_fresh[self.name] = p
             return p
 
-    def to_tac(self):
+    def to_tac(self, p = None):
         global variable_fresh, tac_json, num_variable
-        p = self.get_fresh()
-        s = "%" + str(num_variable)
-        now = {"opcode": "copy", "args": [p], "result": s}
-        num_variable += 1
-        tac_json[0]['body'].append(now)
-        return s
+        if (flag == 'tmm'):
+            p = self.get_fresh()
+            s = "%" + str(num_variable)
+            now = {"opcode": "copy", "args": [p], "result": s}
+            num_variable += 1
+            tac_json[0]['body'].append(now)
+            return s
+        else:
+            p = self.get_fresh()
+            return p
 
 class Vardecl(Expr):
     def __init__(self, name, t, num):
@@ -66,20 +70,25 @@ class Assign(Expr):
     def to_tac(self):
         global variable_fresh, tac_json, num_variable
         p = self.name.get_fresh()
-        if (self.num.__class__.__name__ == "Number"):
-            now = {"opcode": "const", "args": [self.num.val], "result": p}
-            tac_json[0]['body'].append(now)
-        elif (self.num.__class__.__name__ == "Variable"):
-            now = {"opcode": "copy", "args": [self.num.get_fresh()], "result": p}
-            tac_json[0]['body'].append(now)
+        if (flag == 'tmm'):
+            if (self.num.__class__.__name__ == "Number"):
+                now = {"opcode": "const", "args": [self.num.val], "result": p}
+                tac_json[0]['body'].append(now)
+            elif (self.num.__class__.__name__ == "Variable"):
+                now = {"opcode": "copy", "args": [self.num.get_fresh()], "result": p}
+                tac_json[0]['body'].append(now)
+            else:
+                self.num.to_tac(p)
         else:
-            self.num.to_tac(p)
+            pos = self.num.to_tac()
+            now = {"opcode": "copy", "args": [pos], "result": p}
+            tac_json[0]['body'].append(now)
 
 class Number(Expr):
     def __init__(self, val):
         self.val = val
 
-    def to_tac(self):
+    def to_tac(self, p = None):
         global num_variable, tac_json
         s = "%" + str(num_variable)
         now = {"opcode": "const", "args": [self.val], "result": s}
@@ -99,11 +108,15 @@ class UnopApp(Expr):
                 pos = "%" + str(num_variable)
                 num_variable += 1
             s = self.arg.to_tac()
-            now = {"opcode": op_name[self.op], "args": [s], "result": pos}
-            tac_json[0]['body'].append(now)
-            return pos
-
+        else:
+            s = self.arg.to_tac()
+            if (pos == None):
+                pos = "%" + str(num_variable)
+                num_variable += 1
         
+        now = {"opcode": op_name[self.op], "args": [s], "result": pos}
+        tac_json[0]['body'].append(now)
+        return pos
 
 class BinopApp(Expr):
     def __init__(self, op, x, y):
@@ -117,11 +130,15 @@ class BinopApp(Expr):
             if (pos == None):
                 pos = "%" + str(num_variable)
                 num_variable += 1
-            s1 = self.x.to_tac()
-            s2 = self.y.to_tac()
-            now = {"opcode": op_name[self.op], "args": [s1, s2], "result": pos}
-            tac_json[0]['body'].append(now)
-            return pos
+        s1 = self.x.to_tac()
+        s2 = self.y.to_tac()
+        if (flag == 'bmm'):
+            if (pos == None):
+                pos = "%" + str(num_variable)
+                num_variable += 1
+        now = {"opcode": op_name[self.op], "args": [s1, s2], "result": pos}
+        tac_json[0]['body'].append(now)
+        return pos
 
 class Print(Expr):
     def __init__(self, expr):
@@ -134,7 +151,8 @@ class Print(Expr):
             self.expr.to_tac()
             num_variable += 1
         else:
-            now = {"opcode": "print", "args": [tac_json[0]['body'][-1]['result']], "result": None}
+            p = self.expr.to_tac()
+            now = {"opcode": "print", "args": [p], "result": None}
         tac_json[0]['body'].append(now)
 
 def json_to_expr(js_obj):
@@ -176,6 +194,13 @@ def json_to_list(js_obj):
 
 # the main function
 opts, args = getopt.getopt(sys.argv[1:], '', ['tmm', 'bmm'])
+if (opts[0][0] == '--bmm'):
+    flag = 'bmm'
+elif (opts[0][0] == '--tmm'):
+    flag = 'tmm'
+else:
+    print(f'Unrecognized <args> form: {opts[0][0]}')
+    raise ValueError # or whatever
 
 def solve(ast_list):
     for operation in ast_list:
