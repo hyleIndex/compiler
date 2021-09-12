@@ -188,6 +188,6 @@ with open(args[0], 'r') as fp:
 solve(ast_list)
 
 out = json.dumps(tac_json)
-f_out = open('a.json', 'w')
+f_out = open(args[0][:-5] + '.tac.json', 'w')
 f_out.write(out)
 f_out.close()
