@@ -56,8 +56,7 @@ class Parser(object):
             p[0] = ast.BinopApp(to_name[p[2]], p[1], p[3])
 
     def p_expr_unop(self, p):
-        ''' expr : UMINUS expr
-                  | BITCOMPL expr
+        ''' expr : BITCOMPL expr
         '''
         to_name = {'-' : 'UMINUS', '~' : 'BITCOMPL'}
         if (p[1] == '('):
@@ -65,8 +64,12 @@ class Parser(object):
         else:
             p[0] = ast.UnopApp(to_name[p[1]], p[2])
 
+    def p_expression_uminus(self, p):
+        ''' expr : MINUS expr %prec UMINUS '''
+        p[0] = ast.UnopApp('UMINUS', p[2])
+
     def p_vardecl(self, p):
-        ''' vardecl : VAR IDENT ASSIGN expr COLON INT'''
+        ''' vardecl : VAR IDENT ASSIGN expr COLON INT '''
         p[0] = ast.Vardecl(p[2], p[6], p[4])
 
     def p_assign(self, p):
@@ -74,7 +77,7 @@ class Parser(object):
         p[0] = ast.Assign(ast.Variable(p[1]), p[3])
 
     def p_print(self, p):
-        ''' print_expr : PRINT LPAREN expr RPAREN'''
+        ''' print_expr : PRINT LPAREN expr RPAREN '''
         p[0] = ast.Print(p[3])
 
     def p_stmt(self, p):
@@ -99,7 +102,7 @@ class Parser(object):
             p[0] = [p[1]] + p[3]
 
     def p_program(self, p):
-        '''program : DEF main LPAREN RPAREN LBRACE stmts RBRACE'''
+        '''program : DEF main LPAREN RPAREN LBRACE stmts RBRACE '''
         p[0] = p[6]
     
 
@@ -115,10 +118,12 @@ if __name__ == "__main__":
     lexer.test(data)
     parser = Parser()
     p = parser.parse(data)
-    if (p[-1] == None):
+    if (p == None):
+        pass
+    elif (p[-1] == None):
         p = p[:-1]
-    for sts in p:
-        sts.to_tac()
+        for sts in p:
+            sts.to_tac()
     out = json.dumps(ast.tac_json)
     f_out = open('a.tac.json', 'w')
     f_out.write(out)

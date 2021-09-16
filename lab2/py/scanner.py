@@ -40,7 +40,7 @@ class Lexer(object):
         'PLUS', 'MINUS', 'SEMICOLON', 'LPAREN', 'RPAREN', 'IDENT', 'NUMBER',
         'LBRACE', 'RBRACE',
         'BITSHL', 'BITSHR', 'BITXOR', 'BITOR', 'BITAND', 
-        'TIMES', 'DIV', 'MODULUS', 'UMINUS', 'BITCOMPL',
+        'TIMES', 'DIV', 'MODULUS', 'BITCOMPL',
         'ASSIGN', 'COLON'
     ) + tuple(keywords.values())
 
@@ -49,7 +49,7 @@ class Lexer(object):
     t_LPAREN = r'\('
     t_RPAREN = r'\)'
     t_PLUS = r'\+'
-    t_MINUS = '-'
+    t_MINUS = r'\-'
     t_SEMICOLON = ';'
     t_BITSHR = r'\>\>'
     t_BITSHL = r'\<\<'
@@ -78,7 +78,7 @@ class Lexer(object):
         r'0|[1-9][0-9]*'
         t.value = int(t.value)
         return t
-    
+
     def t_COMMENTS(self, t):
         r'\/\/.*\n*'
         pass

@@ -98,9 +98,11 @@ def tac_to_asm(tac_instrs):
                   f'callq printf@PLT'])
     else:
       assert False, f'unknown opcode: {opcode}'
+  stack_size = len(temp_map)
+  if stack_size % 2 != 0: stack_size += 1 # 16 byte alignment for x64
   asm[:0] = [f'pushq %rbp',
              f'movq %rsp, %rbp',
-             f'subq ${8 * len(temp_map)}, %rsp'] \
+             f'subq ${8 * stack_size}, %rsp'] \
   #  + [f'// {tmp} in {reg}' for (tmp, reg) in temp_map.items()]
   asm.extend([f'movq %rbp, %rsp',
               f'popq %rbp',
