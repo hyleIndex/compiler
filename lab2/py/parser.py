@@ -71,7 +71,7 @@ class Parser(object):
 
     def p_assign(self, p):
         ''' assign : IDENT ASSIGN expr'''
-        p[0] = ast.Assign(p[1], p[3])
+        p[0] = ast.Assign(ast.Variable(p[1]), p[3])
 
     def p_print(self, p):
         ''' print_expr : PRINT LPAREN expr RPAREN'''
@@ -115,4 +115,11 @@ if __name__ == "__main__":
     lexer.test(data)
     parser = Parser()
     p = parser.parse(data)
-    print(p)
+    if (p[-1] == None):
+        p = p[:-1]
+    for sts in p:
+        sts.to_tac()
+    out = json.dumps(ast.tac_json)
+    f_out = open('a.tac.json', 'w')
+    f_out.write(out)
+    f_out.close()
