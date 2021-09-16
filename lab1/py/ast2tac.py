@@ -192,6 +192,10 @@ def json_to_list(js_obj):
     for i in range(num_iter):
         ast_list.append(json_to_expr(js_obj[i]))
 
+def solve(ast_list):
+    for operation in ast_list:
+        operation.to_tac()
+
 if __name__ == "__main__":
     # the main function
     opts, args = getopt.getopt(sys.argv[1:], '', ['tmm', 'bmm'])
@@ -205,9 +209,7 @@ if __name__ == "__main__":
         print(f'Unrecognized <args> form: {opts[0][0]}')
         raise ValueError # or whatever
 
-    def solve(ast_list):
-        for operation in ast_list:
-            operation.to_tac()
+
 
     with open(args[0], 'r') as fp:
         js_obj = json.load(fp)
