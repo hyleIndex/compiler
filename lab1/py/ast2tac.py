@@ -192,29 +192,30 @@ def json_to_list(js_obj):
     for i in range(num_iter):
         ast_list.append(json_to_expr(js_obj[i]))
 
-# the main function
-opts, args = getopt.getopt(sys.argv[1:], '', ['tmm', 'bmm'])
-if (len(opts) == 0):
-    flag = 'tmm'
-elif (opts[0][0] == '--bmm'):
-    flag = 'bmm'
-elif (opts[0][0] == '--tmm'):
-    flag = 'tmm'
-else:
-    print(f'Unrecognized <args> form: {opts[0][0]}')
-    raise ValueError # or whatever
+if __name__ == "__main__":
+    # the main function
+    opts, args = getopt.getopt(sys.argv[1:], '', ['tmm', 'bmm'])
+    if (len(opts) == 0):
+        flag = 'tmm'
+    elif (opts[0][0] == '--bmm'):
+        flag = 'bmm'
+    elif (opts[0][0] == '--tmm'):
+        flag = 'tmm'
+    else:
+        print(f'Unrecognized <args> form: {opts[0][0]}')
+        raise ValueError # or whatever
 
-def solve(ast_list):
-    for operation in ast_list:
-        operation.to_tac()
+    def solve(ast_list):
+        for operation in ast_list:
+            operation.to_tac()
 
-with open(args[0], 'r') as fp:
-    js_obj = json.load(fp)
-    json_to_list(js_obj["ast"][0][0][0][4][0][1])
-    
-solve(ast_list)
+    with open(args[0], 'r') as fp:
+        js_obj = json.load(fp)
+        json_to_list(js_obj["ast"][0][0][0][4][0][1])
+        
+    solve(ast_list)
 
-out = json.dumps(tac_json)
-f_out = open(args[0][:-5] + '.tac.json', 'w')
-f_out.write(out)
-f_out.close()
+    out = json.dumps(tac_json)
+    f_out = open(args[0][:-5] + '.tac.json', 'w')
+    f_out.write(out)
+    f_out.close()
