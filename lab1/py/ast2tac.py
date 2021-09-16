@@ -8,9 +8,9 @@ tac_json = [ {"proc" : "@main", "body" : []} ]
 op_name = {"PLUS" : "add", "MINUS" : "sub", "TIMES" : "mul", "DIV" : "div", "MODULUS" : "mod", "BITAND" : "and",
  "BITOR" : "or", "BITXOR" : "xor", "BITSHL" : "shl", "BITSHR" : "shr", "UMINUS" : "neg", "BITCOMPL" : "not"}
 
-ast_list = [] # list all the iterations
+ast_list = []
 
-variable_fresh = {} # maps variable to its fresh
+variable_fresh = {}
 
 class Expr: pass
 
@@ -194,7 +194,9 @@ def json_to_list(js_obj):
 
 # the main function
 opts, args = getopt.getopt(sys.argv[1:], '', ['tmm', 'bmm'])
-if (opts[0][0] == '--bmm'):
+if (len(opts) == 0):
+    flag = 'tmm'
+elif (opts[0][0] == '--bmm'):
     flag = 'bmm'
 elif (opts[0][0] == '--tmm'):
     flag = 'tmm'
