@@ -209,8 +209,6 @@ if __name__ == "__main__":
         print(f'Unrecognized <args> form: {opts[0][0]}')
         raise ValueError # or whatever
 
-
-
     with open(args[0], 'r') as fp:
         js_obj = json.load(fp)
         json_to_list(js_obj["ast"][0][0][0][4][0][1])
