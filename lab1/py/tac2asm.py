@@ -12,6 +12,7 @@ Requires: a working gcc
 import json
 import sys
 import os
+from pathlib import Path
 
 binops = {'add': 'addq',
           'sub': 'subq',
@@ -97,9 +98,11 @@ def tac_to_asm(tac_instrs):
                   f'callq printf@PLT'])
     else:
       assert False, f'unknown opcode: {opcode}'
+  stack_size = len(temp_map)
+  if stack_size % 2 != 0: stack_size += 1 # 16 byte alignment for x64
   asm[:0] = [f'pushq %rbp',
              f'movq %rsp, %rbp',
-             f'subq ${8 * len(temp_map)}, %rsp'] \
+             f'subq ${8 * stack_size}, %rsp'] \
   #  + [f'// {tmp} in {reg}' for (tmp, reg) in temp_map.items()]
   asm.extend([f'movq %rbp, %rsp',
               f'popq %rbp',
@@ -108,7 +111,12 @@ def tac_to_asm(tac_instrs):
   return asm
 
 def compile_tac(fname):
-  assert fname.endswith('.json')
+  if fname.endswith('.tac.json'):
+    rname = fname[:-9]
+  elif fname.endswith('.json'):
+    rname = fname[:-5]
+  else:
+    raise ValueError(f'{fname} does not end in .tac.json or .json')
   tjs = None
   with open(fname, 'rb') as fp:
     tjs = json.load(fp)
@@ -122,8 +130,8 @@ def compile_tac(fname):
              f'\t.text',
              f'\t.globl main',
              f'main:']
-  xname = fname[:-5] + '.exe'
-  sname = fname[:-5] + '.s'
+  xname = rname + '.exe'
+  sname = rname + '.s'
   with open(sname, 'w') as afp:
     print(*asm, file=afp, sep='\n')
   print(f'{fname} -> {sname}')
@@ -132,6 +140,6 @@ def compile_tac(fname):
 
 if __name__ == '__main__':
   if len(sys.argv) != 2:
-    print(f'Usage: {sys.argv[0]} tacfile.json')
+    print(f'Usage: {sys.argv[0]} tacfile.tac.json')
     sys.exit(1)
   compile_tac(sys.argv[1])

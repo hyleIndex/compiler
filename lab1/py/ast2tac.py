@@ -28,15 +28,16 @@ class Variable(Expr):
             variable_fresh[self.name] = p
             return p
 
-    def to_tac(self, p = None):
+    def to_tac(self, pos = None):
         global variable_fresh, tac_json, num_variable
         if (flag == 'tmm'):
             p = self.get_fresh()
-            s = "%" + str(num_variable)
-            now = {"opcode": "copy", "args": [p], "result": s}
-            num_variable += 1
+            if (pos == None):
+                pos = "%" + str(num_variable)
+                num_variable += 1
+            now = {"opcode": "copy", "args": [p], "result": pos}
             tac_json[0]['body'].append(now)
-            return s
+            return pos
         else:
             p = self.get_fresh()
             return p
@@ -88,13 +89,14 @@ class Number(Expr):
     def __init__(self, val):
         self.val = val
 
-    def to_tac(self, p = None):
+    def to_tac(self, pos = None):
         global num_variable, tac_json
-        s = "%" + str(num_variable)
-        now = {"opcode": "const", "args": [self.val], "result": s}
-        num_variable += 1
+        if (pos == None):
+            pos = "%" + str(num_variable)
+            num_variable += 1
+        now = {"opcode": "const", "args": [self.val], "result": pos}
         tac_json[0]['body'].append(now)
-        return s
+        return pos
 
 class UnopApp(Expr):
     def __init__(self, op, arg):
@@ -148,7 +150,7 @@ class Print(Expr):
         if (flag == 'tmm'):
             p = "%%%d"%(num_variable)
             now = {"opcode": "print", "args": [p], "result": None}
-            self.expr.to_tac()
+            self.expr.to_tac(p)
             num_variable += 1
         else:
             p = self.expr.to_tac()

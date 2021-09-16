@@ -34,13 +34,14 @@ class Lexer(object):
 
     ## PRIVATE ##
 
-    keywords = {'print': 'PRINT', 'while': 'WHILE', 'def': 'DEF'}
+    keywords = {'print': 'PRINT', 'while': 'WHILE', 'def': 'DEF', 'var' : 'VAR', 'int' : 'INT', 'main' : 'main'}
 
     tokens = (
         'PLUS', 'MINUS', 'SEMICOLON', 'LPAREN', 'RPAREN', 'IDENT', 'NUMBER',
+        'LBRACE', 'RBRACE',
         'BITSHL', 'BITSHR', 'BITXOR', 'BITOR', 'BITAND', 
         'TIMES', 'DIV', 'MODULUS', 'UMINUS', 'BITCOMPL',
-        'ASSIGN'
+        'ASSIGN', 'COLON'
     ) + tuple(keywords.values())
 
     identifier = r'[a-zA-Z_][0-9a-zA-Z_]*'
@@ -50,8 +51,8 @@ class Lexer(object):
     t_PLUS = r'\+'
     t_MINUS = '-'
     t_SEMICOLON = ';'
-    t_BITSHL = r'\>\>'
-    t_BITSHR = r'\<\<'
+    t_BITSHR = r'\>\>'
+    t_BITSHL = r'\<\<'
     t_BITXOR = r'\^'
     t_BITOR = r'\|'
     t_BITAND = r'\&'
@@ -60,9 +61,12 @@ class Lexer(object):
     t_MODULUS = r'\%'
     t_BITCOMPL = r'\~'
     t_ASSIGN = r'\='
+    t_COLON = ':'
+    t_LBRACE = r'\{'
+    t_RBRACE = r'\}'
 
     # Ignored characters
-    t_ignore = " \t:"
+    t_ignore = " \t"
     
     @TOKEN(identifier)
     def t_IDENT(self, t):
@@ -71,42 +75,8 @@ class Lexer(object):
         return t
 
     def t_NUMBER(self, t):
-        r'[0-9][0-9]*'
+        r'0|[1-9][0-9]*'
         t.value = int(t.value)
-        return t
-
-
-    # character constants (K&R2: A.2.5.2)
-    # Note: a-zA-Z and '.-~^_!=&;,' are allowed as escape chars to support #line
-    # directives with Windows paths as filenames (..\..\dir\file)
-    # For the same reason, decimal_escape allows all digit sequences. We want to
-    # parse all correct code, even if it means to sometimes parse incorrect
-    # code.
-    #
-    simple_escape = r"""([a-zA-Z._~!=&\^\-\\?'"])"""
-    decimal_escape = r"""(\d+)"""
-    hex_escape = r"""(x[0-9a-fA-F]+)"""
-    bad_escape = r"""([\\][^a-zA-Z._~^!=&\^\-\\?'"x0-7])"""
-
-    escape_sequence = r"""(\\("""+simple_escape+'|'+decimal_escape+'|'+hex_escape+'))'
-    cconst_char = r"""([^'\\\n]|"""+escape_sequence+')'
-    char_const = "'"+cconst_char+"'"
-    wchar_const = 'L'+char_const
-    unmatched_quote = "('"+cconst_char+"*\\n)|('"+cconst_char+"*$)"
-    bad_char_const = r"""('"""+cconst_char+"""[^'\n]+')|('')|('"""+bad_escape+r"""[^'\n]*')"""
-
-    # string literals (K&R2: A.2.6)
-    string_char = r"""([^"\\\n]|"""+escape_sequence+')'
-    string_literal = '"'+string_char+'*"'
-    wstring_literal = 'L'+string_literal
-    bad_string_literal = '"'+string_char+'*?'+bad_escape+string_char+'*"'
-
-    @TOKEN(char_const)
-    def t_CHAR_CONST(self, t):
-        return t
-
-    @TOKEN(string_literal)
-    def t_NORMALSTRING(self, t):
         return t
     
     def t_COMMENTS(self, t):
