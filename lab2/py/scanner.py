@@ -77,6 +77,9 @@ class Lexer(object):
     def t_NUMBER(self, t):
         r'0|[1-9][0-9]*'
         t.value = int(t.value)
+        if not (0 <= t.value < (1<<63)):
+            print_error_message(t, f'Error: numerical literal {t.value} not in range(0, 1<<63)')
+            raise SyntaxError('bad number')
         return t
 
     def t_COMMENTS(self, t):
@@ -87,8 +90,34 @@ class Lexer(object):
         r'\n+'
         t.lexer.lineno += t.value.count("\n")
 
+    def print_error_message(self, msg):
+        """Print an error message `msg' at the location of `tok'"""
+        lineno = self.lexer.lineno
+        if hasattr(self.lexer, 'lexmatch'):
+            tokstr = self.lexer.lexmatch.group(0)
+            curpos = self.lexer.lexpos - len(tokstr)
+        else:
+            tokstr = self.value[0]
+            curpos = self.lexer.lexpos
+        # scan backwards from curpos for the position of the beginning of line (bol)
+        bolpos = self.lexer.lexdata.rfind('\n', 0, curpos) + 1
+        # scan forwards from curpos for the position of the end of the line (eol)
+        eolpos = self.lexer.lexdata.find('\n', curpos)
+        if eolpos == -1: eolpos = self.lexer.lexlen
+        # offset of the given token
+        charpos = max(curpos - bolpos, 0) + 1
+        errfile = getattr(self.lexer, 'errfile', None)
+        provenance = getattr(self.lexer, 'provenance', None)
+        if provenance:
+            print(f'At {provenance}, line {lineno}, character {charpos}:', file=errfile)
+        else:
+            print(f'At line {lineno}, character {charpos}:', file=errfile)
+        print(msg, file=errfile)
+        print('>', self.lexer.lexdata[bolpos:eolpos], file=errfile)
+        print(' '*(charpos+1), '^'*len(tokstr), sep='', file=errfile)
+
     def t_error(self, t):
-        print("Illegal character '%s'" % t.value[0])
+        self.print_error_message(t, f'Warning: skipping illegal character {t.value[0]}')
         t.lexer.skip(1)
 
 if __name__ == "__main__":
