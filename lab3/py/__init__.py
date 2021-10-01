@@ -3,4 +3,4 @@
 # https://dabeaz.com/ply/index.html
 
 __version__ = '4.0'
-__all__ = ['ply']
+__all__ = ['ply','tac2asm']
