@@ -1,6 +1,0 @@
-def main() {
-  var x = 213123 : int;
-  var y = x * 2 : int
-  print(x + y - 10);
-  var z = 10 : int;
-}
