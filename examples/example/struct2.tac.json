@@ -1,0 +1,64 @@
+[
+  {
+    "proc": "@main",
+    "args": [],
+    "body": [
+      { "opcode": "const", "args": [1], "result": "%1" },
+      { "opcode": "param", "args": [1, "%1"], "result": null },
+      { "opcode": "const", "args": [16], "result": "%2" },
+      { "opcode": "param", "args": [2, "%2"], "result": null },
+      { "opcode": "call", "args": ["@calloc", 2], "result": "%0" },
+      { "opcode": "getaddress_array", "args": ["%0", 0, 1, 0], "result": "%3" },
+      { "opcode": "const", "args": [20], "result": "%5" },
+      { "opcode": "store", "args": ["%5"], "result": ["%3", 0, 1, 0] },
+      { "opcode": "getaddress_array", "args": ["%0", 0, 1, 0], "result": "%7" },
+      { "opcode": "load", "args": ["%7", 0, 1, 0], "result": "%6" },
+      { "opcode": "param", "args": [1, "%6"], "result": null },
+      { "opcode": "call", "args": ["@__bx_print_int", 1], "result": null },
+      { "opcode": "alloc", "args": [150, 8], "result": "%9" },
+      { "opcode": "const", "args": [1], "result": "%13" },
+      { "opcode": "const", "args": [80], "result": "%14" },
+      { "opcode": "mul", "args": ["%13", "%14"], "result": "%12" },
+      {
+        "opcode": "getaddress_array",
+        "args": ["%9", 0, 1, "%12"],
+        "result": "%10"
+      },
+      { "opcode": "const", "args": [2], "result": "%16" },
+      { "opcode": "const", "args": [8], "result": "%17" },
+      { "opcode": "mul", "args": ["%16", "%17"], "result": "%15" },
+      { "opcode": "const", "args": [5], "result": "%18" },
+      { "opcode": "store", "args": ["%18"], "result": ["%10", 0, 1, "%15"] },
+      { "opcode": "const", "args": [1], "result": "%23" },
+      { "opcode": "const", "args": [80], "result": "%24" },
+      { "opcode": "mul", "args": ["%23", "%24"], "result": "%22" },
+      {
+        "opcode": "getaddress_array",
+        "args": ["%9", 0, 1, "%22"],
+        "result": "%20"
+      },
+      { "opcode": "const", "args": [2], "result": "%26" },
+      { "opcode": "const", "args": [8], "result": "%27" },
+      { "opcode": "mul", "args": ["%26", "%27"], "result": "%25" },
+      { "opcode": "load", "args": ["%20", 0, 1, "%25"], "result": "%19" },
+      { "opcode": "param", "args": [1, "%19"], "result": null },
+      { "opcode": "call", "args": ["@__bx_print_int", 1], "result": null },
+      { "opcode": "alloc", "args": [1, 8], "result": "%28" },
+      {
+        "opcode": "getaddress_array",
+        "args": ["%28", 0, 1, 0],
+        "result": "%29"
+      },
+      { "opcode": "const", "args": [5], "result": "%31" },
+      { "opcode": "store", "args": ["%31"], "result": ["%29", 0, 1, 0] },
+      {
+        "opcode": "getaddress_array",
+        "args": ["%28", 0, 1, 0],
+        "result": "%33"
+      },
+      { "opcode": "load", "args": ["%33", 0, 1, 0], "result": "%32" },
+      { "opcode": "param", "args": [1, "%32"], "result": null },
+      { "opcode": "call", "args": ["@__bx_print_int", 1], "result": null }
+    ]
+  }
+]

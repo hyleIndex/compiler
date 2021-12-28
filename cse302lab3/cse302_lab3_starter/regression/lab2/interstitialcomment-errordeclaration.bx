@@ -1,6 +1,0 @@
-def main() {
-  var x = // interstitial comment
-    1 + // one more
-    x : int;
-  print(x);
-}
