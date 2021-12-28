@@ -1,6 +1,6 @@
-# Structured and Aggregate TypesFile
+# Compiler
 
-Final project of CSE302 Compilers course on topic **Structured and Aggregate TypesFile**
+A full compiler for bx language, which is a C-like language.
 
 
 ## Execution 
@@ -19,14 +19,3 @@ For more information, execute command:
 or
 
 > python3 bxcc.py --help <example-path.bx>
-
-## Project information
-
-We have managed to complete all set tasks including type abriviation. For additional tests, one case use tests we have created in the directory **examples**.
-
-## Team members
-
-- Lazar Milikic
-- Pexin You
-- Gorazd Dimitorv
-- Maayane Attias
